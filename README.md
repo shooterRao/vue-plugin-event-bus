@@ -28,10 +28,10 @@ Vue.use(VueEventBus);
 // in vue component lifecycle hooks...
 {
   created() {
-    this.$eventBus.on('xxx', function handler() {}, this); // you should pass in the current vue instance
-    // If you don't pass the current instance,like use this.$on(xxx),you should manual remove eventHandler...
-    // So,I strongly recommend you pass 'this'(current vue instance)
-    // Because it can auto remove eventHandler when component is destroyed
+    this.$eventBus.on('xxx', function callback() {}, this); // you should pass in the current vue instance
+    // if you don't pass the current instance,like use this.$on(xxx),you should manual remove eventHandler...
+    // so,I strongly recommend you pass 'this'(current vue instance)
+    // because it can auto remove eventHandler when component is destroyed
   }
 }
 
