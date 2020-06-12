@@ -1,0 +1,28 @@
+{
+  "name": "vue-plugin-event-bus",
+  "version": "0.0.1",
+  "description": "vue2.x eventbus plugin",
+  "license": "MIT",
+  "module": "dist/index.esm.js",
+  "main": "dist/index.js",
+  "types": "types/index.d.ts",
+  "scripts": {
+    "build": "rollup -c"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shooterRao/vue-plugin-event-bus.git"
+  },
+  "keywords": [
+    "vue",
+    "vue-plugin",
+    "eventBus"
+  ],
+  "author": "shooterRao",
+  "devDependencies": {
+    "rollup": "^2.15.0",
+    "rollup-plugin-typescript2": "^0.27.1",
+    "typescript": "^3.9.5",
+    "vue": "^2.6.11"
+  }
+}
