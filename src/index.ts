@@ -13,7 +13,7 @@ export interface Options {
   eventBusNamespace?: string;
 }
 
-function eventBusplugin(Vue: VueConstructor, options: Options = {}) {
+function eventBusPlugin(Vue: VueConstructor, options: Options = {}) {
   let { eventBusNamespace } = options;
 
   eventBusNamespace = eventBusNamespace || '$eventBus'; // this.$eventBus as default
@@ -125,4 +125,4 @@ function eventBusplugin(Vue: VueConstructor, options: Options = {}) {
   });
 }
 
-export default eventBusplugin;
+export default eventBusPlugin;

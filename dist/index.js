@@ -27,7 +27,7 @@
         return r;
     }
 
-    function plugin(Vue, options) {
+    function eventBusPlugin(Vue, options) {
         if (options === void 0) { options = {}; }
         var eventBusNamespace = options.eventBusNamespace;
         eventBusNamespace = eventBusNamespace || '$eventBus'; // this.$eventBus as default
@@ -130,6 +130,6 @@
         });
     }
 
-    return plugin;
+    return eventBusPlugin;
 
 })));

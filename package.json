@@ -8,8 +8,7 @@
   "types": "types/index.d.ts",
   "scripts": {
     "build": "rollup -c",
-    "prepublishOnly": "npm run build",
-    "publish": "npm publish"
+    "prepublishOnly": "npm run build"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org"

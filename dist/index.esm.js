@@ -21,7 +21,7 @@ function __spreadArrays() {
     return r;
 }
 
-function plugin(Vue, options) {
+function eventBusPlugin(Vue, options) {
     if (options === void 0) { options = {}; }
     var eventBusNamespace = options.eventBusNamespace;
     eventBusNamespace = eventBusNamespace || '$eventBus'; // this.$eventBus as default
@@ -124,4 +124,4 @@ function plugin(Vue, options) {
     });
 }
 
-export default plugin;
+export default eventBusPlugin;
