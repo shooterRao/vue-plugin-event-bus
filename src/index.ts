@@ -13,10 +13,14 @@ export interface Options {
   eventBusNamespace?: string;
 }
 
-function plugin(Vue: VueConstructor, options: Options = {}) {
+function eventBusplugin(Vue: VueConstructor, options: Options = {}) {
   let { eventBusNamespace } = options;
 
   eventBusNamespace = eventBusNamespace || '$eventBus'; // this.$eventBus as default
+
+  if (Vue[eventBusNamespace]) {
+    throw new Error('eventBusNamespace conflict, please redefine');
+  }
 
   const events = new Vue({
     name: eventBusNamespace,
@@ -90,8 +94,6 @@ function plugin(Vue: VueConstructor, options: Options = {}) {
       // const { $eventBus } = this as Vue;
 
       if (eventBusNamespace) {
-        // @ts-ignore
-        // TODO: fix ts-ignore
         const $eventBus = this[eventBusNamespace] as EventBus;
 
         const { eventCompMap, compEventMap } = $eventBus;
@@ -123,4 +125,4 @@ function plugin(Vue: VueConstructor, options: Options = {}) {
   });
 }
 
-export default plugin;
+export default eventBusplugin;

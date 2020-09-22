@@ -1,6 +1,6 @@
 {
   "name": "vue-plugin-event-bus",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "vue2.x eventbus plugin",
   "license": "MIT",
   "module": "dist/index.esm.js",
@@ -10,6 +10,9 @@
     "build": "rollup -c",
     "prepublishOnly": "npm run build",
     "publish": "npm publish"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
   },
   "repository": {
     "type": "git",

@@ -31,6 +31,9 @@
         if (options === void 0) { options = {}; }
         var eventBusNamespace = options.eventBusNamespace;
         eventBusNamespace = eventBusNamespace || '$eventBus'; // this.$eventBus as default
+        if (Vue[eventBusNamespace]) {
+            throw new Error('eventBusNamespace conflict, please redefine');
+        }
         var events = new Vue({
             name: eventBusNamespace,
             data: function () {
@@ -97,8 +100,6 @@
                 // const { $eventBus } = this as Vue;
                 var _this = this;
                 if (eventBusNamespace) {
-                    // @ts-ignore
-                    // TODO: fix ts-ignore
                     var $eventBus_1 = this[eventBusNamespace];
                     var eventCompMap = $eventBus_1.eventCompMap, compEventMap = $eventBus_1.compEventMap;
                     var eventSubs = compEventMap.get(this);
