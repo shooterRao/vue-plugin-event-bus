@@ -7,7 +7,9 @@
   "main": "dist/index.js",
   "types": "types/index.d.ts",
   "scripts": {
-    "build": "rollup -c"
+    "build": "rollup -c",
+    "prepublishOnly": "npm run build",
+    "publish": "npm publish"
   },
   "repository": {
     "type": "git",

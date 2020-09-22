@@ -1,17 +1,25 @@
-import { VueConstructor, Component } from 'vue'
+import { VueConstructor, Component } from 'vue';
+import { EventBus } from './shim';
 
 export interface EventCompMap {
-  [event: string]: Component[]
+  [event: string]: Component[];
 }
 
 export interface CompEventMap {
-  [event: string]: [Function]
+  [event: string]: [Function];
 }
 
-function plugin(Vue: VueConstructor) {
+export interface Options {
+  eventBusNamespace?: string;
+}
+
+function plugin(Vue: VueConstructor, options: Options = {}) {
+  let { eventBusNamespace } = options;
+
+  eventBusNamespace = eventBusNamespace || '$eventBus'; // this.$eventBus as default
 
   const events = new Vue({
-    name: '$eventBus',
+    name: eventBusNamespace,
     data() {
       return {
         eventCompMap: {} as EventCompMap, // 用于记录同个事件被多少个组件订阅了
@@ -41,7 +49,11 @@ function plugin(Vue: VueConstructor) {
 
       // 记录该组件订阅了多少个事件
       // 便于在组件销毁时自动解绑
-      _handlecompEventMap(event: string, callback: Function, compInstance: Component) {
+      _handlecompEventMap(
+        event: string,
+        callback: Function,
+        compInstance: Component
+      ) {
         if (this.compEventMap.has(compInstance)) {
           let eventCompMap = this.compEventMap.get(compInstance);
           if (eventCompMap?.[event]) {
@@ -66,7 +78,7 @@ function plugin(Vue: VueConstructor) {
     },
   });
 
-  Object.defineProperty(Vue.prototype, '$eventBus', {
+  Object.defineProperty(Vue.prototype, eventBusNamespace, {
     get() {
       return events;
     },
@@ -75,30 +87,37 @@ function plugin(Vue: VueConstructor) {
   Vue.mixin({
     // 销毁时，自动解绑订阅事件
     beforeDestroy() {
-      const { $eventBus } = this as Vue;
-      const { eventCompMap, compEventMap } = $eventBus;
+      // const { $eventBus } = this as Vue;
 
-      const eventSubs = compEventMap.get(this);
+      if (eventBusNamespace) {
+        // @ts-ignore
+        // TODO: fix ts-ignore
+        const $eventBus = this[eventBusNamespace] as EventBus;
 
-      if (eventSubs) {
-        for (const eventName of Object.keys(eventSubs)) {
-          const eventHandlers = eventSubs[eventName];
-          Array.isArray(eventHandlers) &&
-            eventHandlers.forEach((handler) => {
-              $eventBus.off(eventName, handler);
-            });
+        const { eventCompMap, compEventMap } = $eventBus;
 
-          // 处理 eventCompMap
-          if (eventCompMap[eventName]) {
-            let compSubs = eventCompMap[eventName];
-            // 假如订阅了同个事件
-            // 需要全部移除
-            compSubs = compSubs.filter((comp) => comp !== this);
-            compSubs.length === 0 && delete eventCompMap[eventName];
+        const eventSubs = compEventMap.get(this);
+
+        if (eventSubs) {
+          for (const eventName of Object.keys(eventSubs)) {
+            const eventHandlers = eventSubs[eventName];
+            Array.isArray(eventHandlers) &&
+              eventHandlers.forEach((handler) => {
+                $eventBus.off(eventName, handler);
+              });
+
+            // 处理 eventCompMap
+            if (eventCompMap[eventName]) {
+              let compSubs = eventCompMap[eventName];
+              // 假如订阅了同个事件
+              // 需要全部移除
+              compSubs = compSubs.filter((comp) => comp !== this);
+              compSubs.length === 0 && delete eventCompMap[eventName];
+            }
           }
-        }
 
-        compEventMap.delete(this);
+          compEventMap.delete(this);
+        }
       }
     },
   });

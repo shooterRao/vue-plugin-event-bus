@@ -27,9 +27,12 @@
         return r;
     }
 
-    function plugin(Vue) {
+    function plugin(Vue, options) {
+        if (options === void 0) { options = {}; }
+        var eventBusNamespace = options.eventBusNamespace;
+        eventBusNamespace = eventBusNamespace || '$eventBus'; // this.$eventBus as default
         var events = new Vue({
-            name: '$eventBus',
+            name: eventBusNamespace,
             data: function () {
                 return {
                     eventCompMap: {},
@@ -83,7 +86,7 @@
                 },
             },
         });
-        Object.defineProperty(Vue.prototype, '$eventBus', {
+        Object.defineProperty(Vue.prototype, eventBusNamespace, {
             get: function () {
                 return events;
             },
@@ -91,31 +94,36 @@
         Vue.mixin({
             // 销毁时，自动解绑订阅事件
             beforeDestroy: function () {
+                // const { $eventBus } = this as Vue;
                 var _this = this;
-                var $eventBus = this.$eventBus;
-                var eventCompMap = $eventBus.eventCompMap, compEventMap = $eventBus.compEventMap;
-                var eventSubs = compEventMap.get(this);
-                if (eventSubs) {
-                    var _loop_1 = function (eventName) {
-                        var eventHandlers = eventSubs[eventName];
-                        Array.isArray(eventHandlers) &&
-                            eventHandlers.forEach(function (handler) {
-                                $eventBus.off(eventName, handler);
-                            });
-                        // 处理 eventCompMap
-                        if (eventCompMap[eventName]) {
-                            var compSubs = eventCompMap[eventName];
-                            // 假如订阅了同个事件
-                            // 需要全部移除
-                            compSubs = compSubs.filter(function (comp) { return comp !== _this; });
-                            compSubs.length === 0 && delete eventCompMap[eventName];
+                if (eventBusNamespace) {
+                    // @ts-ignore
+                    // TODO: fix ts-ignore
+                    var $eventBus_1 = this[eventBusNamespace];
+                    var eventCompMap = $eventBus_1.eventCompMap, compEventMap = $eventBus_1.compEventMap;
+                    var eventSubs = compEventMap.get(this);
+                    if (eventSubs) {
+                        var _loop_1 = function (eventName) {
+                            var eventHandlers = eventSubs[eventName];
+                            Array.isArray(eventHandlers) &&
+                                eventHandlers.forEach(function (handler) {
+                                    $eventBus_1.off(eventName, handler);
+                                });
+                            // 处理 eventCompMap
+                            if (eventCompMap[eventName]) {
+                                var compSubs = eventCompMap[eventName];
+                                // 假如订阅了同个事件
+                                // 需要全部移除
+                                compSubs = compSubs.filter(function (comp) { return comp !== _this; });
+                                compSubs.length === 0 && delete eventCompMap[eventName];
+                            }
+                        };
+                        for (var _i = 0, _a = Object.keys(eventSubs); _i < _a.length; _i++) {
+                            var eventName = _a[_i];
+                            _loop_1(eventName);
                         }
-                    };
-                    for (var _i = 0, _a = Object.keys(eventSubs); _i < _a.length; _i++) {
-                        var eventName = _a[_i];
-                        _loop_1(eventName);
+                        compEventMap.delete(this);
                     }
-                    compEventMap.delete(this);
                 }
             },
         });
