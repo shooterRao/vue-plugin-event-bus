@@ -2,6 +2,11 @@
 
 Lightweight eventBus solution, easy to use eventBus in vue2.x
 
+## Feature
+
+- Mapping relationship between events and components
+- Auto $off events
+
 ## Installing
 
 use npm
@@ -24,12 +29,6 @@ import VueEventBus from "vue-plugin-event-bus";
 
 Vue.use(VueEventBus);
 
-// if you have more than 2 eventBus
-// you should use eventBusNamespace
-Vue.use(VueEventBus, {
-  eventBusNamespace: '$eventBusXXX' // default as $eventBus
-})
-
 // now you can use $eventBus directly in a vue component
 // in vue component lifecycle hooks...
 {
@@ -47,15 +46,6 @@ Vue.use(VueEventBus, {
     test() {
       this.$eventBus.emit('xxx', ...);
     }
-  },
-}
-
-// if you use eventBusNamespace
-// you should write it this way
-{
-  created() {
-    // $eventBusXXX is your eventBusNamespace define
-    this.$eventBusXXX.on('xxx', () => {}, this);
   },
 }
 ```

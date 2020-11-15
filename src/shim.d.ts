@@ -8,7 +8,7 @@ export interface CompEventMap {
   [event: string]: [Function]
 }
 
-export declare class EventBus extends Vue {
+export interface EventBus{
   eventCompMap: EventCompMap;
   compEventMap: WeakMap<Component, CompEventMap>;
 
