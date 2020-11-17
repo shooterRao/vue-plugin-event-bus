@@ -1,6 +1,6 @@
 {
   "name": "vue-plugin-event-bus",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "vue2.x eventbus plugin",
   "license": "MIT",
   "module": "dist/index.esm.js",

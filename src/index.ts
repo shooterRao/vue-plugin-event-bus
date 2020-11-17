@@ -8,12 +8,19 @@ export interface CompEventMap {
   [event: string]: [Function];
 }
 
+export interface HasHook {
+  [uid: string]: boolean;
+}
+
 function eventBusPlugin(Vue: VueConstructor) {
   // 用于记录同个事件被多少个组件订阅了
   const eventCompMap = {} as EventCompMap;
 
   // 用于记录每个组件订阅了多少个事件
   const compEventMap = new WeakMap<Component, CompEventMap>();
+
+  // components has hook
+  const hasHook: HasHook = {};
 
   const EventBus = new Vue();
 
@@ -50,14 +57,11 @@ function eventBusPlugin(Vue: VueConstructor) {
 
   // 在使用了 $eventBus 组件的 beforeDestroy 钩子队列中加入解绑函数
   function handleBeforeDestroyHooks(compInstance) {
-    const { $options } = compInstance;
-    const { beforeDestroy } = $options;
+    const { _uid } = compInstance;
 
-    if (
-      Array.isArray(beforeDestroy) &&
-      !beforeDestroy.includes(beforeDestroyHandler)
-    ) {
-      beforeDestroy.push(beforeDestroyHandler);
+    if (!hasHook[_uid]) {
+      compInstance.$once('hook:beforeDestroy', beforeDestroyHandler);
+      hasHook[_uid] = true;
     }
   }
 
@@ -86,6 +90,8 @@ function eventBusPlugin(Vue: VueConstructor) {
       }
 
       compEventMap.delete(compInstance);
+
+      delete hasHook[compInstance._uid];
     }
   }
 

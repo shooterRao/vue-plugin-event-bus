@@ -26,6 +26,8 @@ function eventBusPlugin(Vue) {
     var eventCompMap = {};
     // 用于记录每个组件订阅了多少个事件
     var compEventMap = new WeakMap();
+    // components has hook
+    var hasHook = {};
     var EventBus = new Vue();
     // 记录该组件订阅了多少个事件
     // 便于在组件销毁时自动解绑
@@ -56,11 +58,10 @@ function eventBusPlugin(Vue) {
     }
     // 在使用了 $eventBus 组件的 beforeDestroy 钩子队列中加入解绑函数
     function handleBeforeDestroyHooks(compInstance) {
-        var $options = compInstance.$options;
-        var beforeDestroy = $options.beforeDestroy;
-        if (Array.isArray(beforeDestroy) &&
-            !beforeDestroy.includes(beforeDestroyHandler)) {
-            beforeDestroy.push(beforeDestroyHandler);
+        var _uid = compInstance._uid;
+        if (!hasHook[_uid]) {
+            compInstance.$once('hook:beforeDestroy', beforeDestroyHandler);
+            hasHook[_uid] = true;
         }
     }
     function beforeDestroyHandler() {
@@ -88,6 +89,7 @@ function eventBusPlugin(Vue) {
                 _loop_1(eventName);
             }
             compEventMap.delete(compInstance);
+            delete hasHook[compInstance._uid];
         }
     }
     var events = {
